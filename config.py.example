@@ -1,0 +1,9 @@
+telegram = {
+    'access_token': ''
+}
+
+gmusic = {
+    'email': '',
+    'password': '',
+    'device_id': ''
+}
