@@ -7,11 +7,9 @@ def cmd_find(bot, update):
 
 
 class FindCommand(object):
-    client = Client()
 
     def __init__(self):
         self.client = Client()
-        #super().__init__()
 
     def execute(self, bot, update):
         songs = []
