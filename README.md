@@ -1,2 +1,2 @@
-# Geemusic Telegram Bot
-Yet another bot of Telegram for accessing to google music.
+# GeeMusic Telegram Bot
+Just search, download and listen music.

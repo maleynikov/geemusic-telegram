@@ -1,17 +1,18 @@
-from telegram import ParseMode
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
+
 from gmusic import Client
 
 
-def cmd_find(bot, update):
-    FindCommand().execute(bot, update)
+def command(update: Update, context: CallbackContext):
+    Search().execute(update)
 
 
-class FindCommand(object):
-
+class Search:
     def __init__(self):
         self.client = Client()
 
-    def execute(self, bot, update):
+    def execute(self, update: Update):
         songs = []
 
         for song in self.client.search_songs(update.message.text):

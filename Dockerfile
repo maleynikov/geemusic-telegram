@@ -1,11 +1,14 @@
-FROM python:3
+FROM python:3.8
 MAINTAINER Max Aleynikov <max.aleyinikov@gmail.com>
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt ./
+RUN apt-get update -y
+RUN apt-get install -y ruby
+RUN gem install foreman
+
+COPY . ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
-CMD ["python", "bot.py"]
+EXPOSE 5000
+CMD ["foreman", "start"]

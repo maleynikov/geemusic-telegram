@@ -1,9 +1,13 @@
-from telegram import InlineQueryResultAudio
+from telegram import InlineQueryResultAudio, Update
+from telegram.ext import CallbackContext
+
 from gmusic import Client
-import config
+from config import Config
+
+config = Config()
 
 
-def inlinequery(bot, update):
+def inlinequery(update: Update, context: CallbackContext):
     client = Client()
     results = []
 
@@ -13,7 +17,7 @@ def inlinequery(bot, update):
             title=song['title'],
             performer=song['artist'],
             audio_duration=song['duration'],
-            audio_url='{0}/get_song?id=T{1}'.format(config.gmusic['proxy_server'], song['nid'])
+            audio_url='https://{0}/get_song?id=T{1}'.format(config.get_option('proxy', 'host'), song['nid'])
         ))
 
     update.inline_query.answer(results)

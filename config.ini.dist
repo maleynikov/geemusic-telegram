@@ -1,0 +1,11 @@
+[telegram]
+token = <token>
+
+[gmusic]
+email = <email>
+password = <password>
+device_id = <device-id>
+search_result_max_cnt = <num>
+
+[proxy]
+host = <hostname>

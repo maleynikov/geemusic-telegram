@@ -1,16 +1,21 @@
 import hashlib
 import requests
-from mutagen.id3 import ID3, TIT2, TPE1, APIC
+from mutagen.id3 import (ID3, TIT2, TPE1, APIC)
 from mutagen.mp3 import MP3, error
+from telegram import Update
+from telegram.ext import CallbackContext
+
 from gmusic import Client
 
 
-def cmd_dl(bot, update, groups):
-    DlCommand(groups[0]).execute(bot, update)
+def command(update: Update, context: CallbackContext):
+    groups = context.match.groups()
+
+    if len(groups) > 0:
+        Download(groups[0]).execute(update)
 
 
-class DlCommand(object):
-
+class Download:
     def __init__(self, song_nid):
         self.song_nid = song_nid
         self.client = Client()
@@ -20,20 +25,18 @@ class DlCommand(object):
         response = requests.get(song_url)
 
         if response.status_code == requests.codes.ok:
-            filename = hashlib.md5(song_url.encode('utf-8')).hexdigest()
-            filepath = '/tmp/geemusicbot_{0}.mp3'.format(filename)
+            filename = hashlib.md5(song_url.encode('utf-8')).hexdigest()[:8]
+            filepath = '/tmp/song_{0}.mp3'.format(filename)
 
             with open(filepath, 'wb') as out:
                 out.write(response.content)
-
             return dict(filename=filename, filepath=filepath)
-
         return None
 
     @staticmethod
     def __bind_tags(song_file, song_info):
         audio = MP3(song_file['filepath'], ID3=ID3)
-        
+
         try:
             audio.add_tags()
         except error:
@@ -47,7 +50,7 @@ class DlCommand(object):
 
         # set album cover
         response = requests.get(song_info['albumArtRef'][0]['url'])
-        filepath = '/tmp/geemusicbot_{0}.jpg'.format(song_file['filename'])
+        filepath = '/tmp/song_{0}.jpg'.format(song_file['filename'])
 
         with open(filepath, 'wb') as out:
             out.write(response.content)
@@ -61,7 +64,7 @@ class DlCommand(object):
         ))
         audio.save(v2_version=3)
 
-    def execute(self, bot, update):
+    def execute(self, update: Update):
         song_url = self.client.get_song_url(self.song_nid)
         song_file = self.__song_download(song_url)
         song_info = self.client.get_song_info(self.song_nid)
@@ -70,4 +73,4 @@ class DlCommand(object):
 
         if song_file is not None:
             audio = open(song_file['filepath'], 'rb')
-            bot.send_audio(chat_id=update.message.chat_id, audio=audio)
+            update.message.reply_audio(audio=audio)

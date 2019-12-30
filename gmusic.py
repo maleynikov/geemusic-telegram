@@ -1,9 +1,11 @@
 from gmusicapi import Mobileclient
 from random import choice
-import config
+from config import Config
+
+config = Config()
 
 
-class Client(object):
+class Client:
     __instance = None
 
     def __new__(cls):
@@ -11,15 +13,15 @@ class Client(object):
             Client.__instance = object.__new__(cls)
             Client.__instance.client = Mobileclient()
             Client.__instance.client.login(
-                email=config.gmusic['email'],
-                password=config.gmusic['password'],
-                android_id=config.gmusic['device_id']
+                email=config.get_option('gmusic', 'email'),
+                password=config.get_option('gmusic', 'password'),
+                android_id=config.get_option('gmusic', 'device_id')
             )
 
         return Client.__instance
 
     def search_songs(self, query_str):
-        song_hits = self.client.search(query_str, config.gmusic['search_result_max_cnt'])['song_hits']
+        song_hits = self.client.search(query_str, config.get_option('gmusic', 'search_result_max_cnt'))['song_hits']
         songs = []
 
         for song_hit in song_hits:
